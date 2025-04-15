@@ -32,8 +32,8 @@ public class Main {
     text: isDarkMode ? "#e0e1dd" : "#334155",
     lineNumbers: isDarkMode ? "#64748b" : "#94a3b8",
     border: isDarkMode ? "#334155" : "#cbd5e1",
-    titleGradient: isDarkMode 
-      ? "linear-gradient(90deg, #3a1c71, #6b46c1)" 
+    titleGradient: isDarkMode
+      ? "linear-gradient(90deg, #3a1c71, #6b46c1)"
       : "linear-gradient(90deg, #6366f1, #8b5cf6)",
     activeTabBg: isDarkMode ? "#0d1b2a" : "#ffffff",
     inactiveTabText: isDarkMode ? "#94a3b8" : "#64748b"
@@ -59,11 +59,11 @@ public class Main {
       e.preventDefault();
       const { selectionStart, selectionEnd } = e.target;
       const newContent = tabs[activeTab].content.substring(0, selectionStart) + '    ' + tabs[activeTab].content.substring(selectionEnd);
-      
+
       const newTabs = [...tabs];
       newTabs[activeTab].content = newContent;
       setTabs(newTabs);
-      
+
       setTimeout(() => {
         e.target.selectionStart = e.target.selectionEnd = selectionStart + 4;
       }, 0);
@@ -89,7 +89,7 @@ public class Main {
     setIsActive(false);
     setTimeLeft(minutes * 60);
   };
-  
+
   // Handle minutes input change
   const handleMinutesChange = (e) => {
     const value = Math.max(1, Math.min(60, parseInt(e.target.value) || 0));
@@ -108,8 +108,8 @@ public class Main {
   const getBoilerplateForExtension = (filename) => {
     const extension = filename.split('.').pop().toLowerCase();
     const baseName = filename.split('.')[0]; // Get only the first part before dot (fixed)
-    
-    switch(extension) {
+
+    switch (extension) {
       case 'java':
         return `// Java DSA Practice Template
 public class ${baseName} {
@@ -130,7 +130,7 @@ def main():
     print("Hello World")
     
     # Example array
-    arr =
+    arr = []
     print(f"Array: {arr}")
 
 if __name__ == "__main__":
@@ -144,7 +144,7 @@ int main() {
     
     // Example array
     int arr[] = {5, 3, 8, 4, 2};
-    int n = sizeof(arr) / sizeof(arr);
+    int n = sizeof(arr) / sizeof(arr[0]);
     
     printf("Array: ");
     for (int i = 0; i < n; i++)
@@ -178,7 +178,7 @@ function main() {
     console.log("Hello World");
     
     // Example array
-    const arr =;
+    const arr = [];
     console.log("Array:", arr);
 }
 
@@ -208,16 +208,16 @@ main();`;
       'cpp': 'cpp',
       'javascript': 'js'
     };
-    
+
     const extension = extensions[lang] || 'txt';
     const baseName = `File${tabs.length + 1}`;
     const newTabName = `${baseName}.${extension}`;
-    
+
     const newTabs = [...tabs, {
       name: newTabName,
       content: getBoilerplateForExtension(newTabName)
     }];
-    
+
     setTabs(newTabs);
     setActiveTab(newTabs.length - 1);
   };
@@ -226,10 +226,10 @@ main();`;
   const closeTab = (index, e) => {
     e.stopPropagation();
     if (tabs.length === 1) return;
-    
+
     const newTabs = tabs.filter((_, i) => i !== index);
     setTabs(newTabs);
-    
+
     if (activeTab >= index && activeTab > 0) {
       setActiveTab(activeTab - 1);
     }
@@ -261,26 +261,26 @@ main();`;
   // Save tab rename with class name update
   const saveTabRename = (e) => {
     e.preventDefault();
-    
+
     if (editingTabName.trim() === '') {
       return; // Don't allow empty names
     }
 
     const oldName = tabs[editingTabIndex].name;
     const newName = editingTabName;
-    
+
     const newTabs = [...tabs];
     newTabs[editingTabIndex].name = newName;
-    
+
     // Update class name in content if it's a Java file
     if (oldName.endsWith('.java') && newName.endsWith('.java')) {
       newTabs[editingTabIndex].content = updateClassNameInContent(
-        oldName, 
-        newName, 
+        oldName,
+        newName,
         newTabs[editingTabIndex].content
       );
     }
-    
+
     setTabs(newTabs);
     setEditingTabIndex(null);
   };
@@ -312,18 +312,20 @@ main();`;
   };
 
   return (
-    <div style={{ 
-      display: "flex", 
-      flexDirection: "column", 
-      height: "100vh", 
+    <div style={{
+      display: "flex",
+      flexDirection: "column",
+      height: "100vh",
       fontFamily: "Consolas, Monaco, 'Courier New', monospace",
       backgroundColor: theme.bg,
       color: theme.text,
       transition: "all 0.3s ease"
     }}>
       {/* Header */}
-      <div style={{ 
+      <div style={{
         display: "flex",
+        flexWrap: "wrap",
+        justifyContent: "space-between",
         backgroundColor: theme.headerBg,
         borderBottom: `1px solid ${theme.border}`,
         padding: "10px 15px",
@@ -335,12 +337,12 @@ main();`;
           background: theme.titleGradient,
           padding: "8px 16px",
           borderRadius: "6px",
-          marginRight: "20px",
+          marginBottom: "10px", // Add margin for mobile view
           transition: "all 0.3s ease"
         }}>
-          <h1 style={{ 
-            margin: 0, 
-            fontSize: "16px", 
+          <h1 style={{
+            margin: 0,
+            fontSize: "16px",
             fontWeight: "600",
             color: "white"
           }}>
@@ -355,15 +357,14 @@ main();`;
           background: theme.titleGradient,
           padding: "6px 16px",
           borderRadius: "6px",
-          marginRight: "auto",
-          marginLeft: "auto",
+          marginBottom: "10px", // Add margin for mobile view
           transition: "all 0.3s ease"
         }}>
           <div style={{ fontSize: "20px", fontWeight: "bold", marginRight: "12px", color: "white" }}>
             {formatTime(timeLeft)}
           </div>
           <div style={{ display: "flex", gap: "8px" }}>
-            <button 
+            <button
               onClick={isActive ? pauseTimer : startTimer}
               style={{
                 backgroundColor: isActive ? "#ef4444" : "#10b981",
@@ -377,7 +378,7 @@ main();`;
             >
               {isActive ? "Pause" : "Start"}
             </button>
-            <button 
+            <button
               onClick={resetTimer}
               style={{
                 backgroundColor: "#6b7280",
@@ -395,14 +396,14 @@ main();`;
         </div>
 
         {/* Right side controls */}
-        <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "10px" }}>
           <input
             type="number"
             min="1"
             max="60"
             value={minutes}
             onChange={handleMinutesChange}
-            style={{ 
+            style={{
               width: "50px",
               padding: "5px",
               backgroundColor: isDarkMode ? "#334155" : "#e2e8f0",
@@ -414,7 +415,7 @@ main();`;
             }}
           />
           <span>mins</span>
-          
+
           {/* Theme Toggle Button */}
           <button
             onClick={toggleTheme}
@@ -431,7 +432,7 @@ main();`;
           >
             {isDarkMode ? "☀️" : "🌙"}
           </button>
-          
+
           <button
             onClick={saveCode}
             style={{
@@ -461,7 +462,7 @@ main();`;
         transition: "all 0.3s ease"
       }}>
         {tabs.map((tab, index) => (
-          <div 
+          <div
             key={index}
             onClick={() => setActiveTab(index)}
             style={{
@@ -536,7 +537,7 @@ main();`;
             )}
           </div>
         ))}
-        
+
         {/* Generic Tab Button */}
         <button
           onClick={addGenericTab}
@@ -562,6 +563,7 @@ main();`;
         borderBottom: `1px solid ${theme.border}`,
         padding: "8px 10px",
         overflowX: "auto",
+        flexWrap: "wrap", // Allow buttons to wrap on smaller screens
         transition: "all 0.3s ease"
       }}>
         <button
@@ -569,6 +571,7 @@ main();`;
           style={{
             padding: "4px 8px",
             marginRight: "8px",
+            marginBottom: "4px",  // Add some margin for mobile view
             backgroundColor: "#3b82f6",
             border: "none",
             borderRadius: "4px",
@@ -585,6 +588,7 @@ main();`;
           style={{
             padding: "4px 8px",
             marginRight: "8px",
+            marginBottom: "4px",  // Add some margin for mobile view
             backgroundColor: "#10b981",
             border: "none",
             borderRadius: "4px",
@@ -601,6 +605,7 @@ main();`;
           style={{
             padding: "4px 8px",
             marginRight: "8px",
+            marginBottom: "4px",  // Add some margin for mobile view
             backgroundColor: "#f59e0b",
             border: "none",
             borderRadius: "4px",
@@ -617,6 +622,7 @@ main();`;
           style={{
             padding: "4px 8px",
             marginRight: "8px",
+            marginBottom: "4px",  // Add some margin for mobile view
             backgroundColor: "#64748b",
             border: "none",
             borderRadius: "4px",
@@ -632,6 +638,7 @@ main();`;
           onClick={() => addLanguageTab('javascript')}
           style={{
             padding: "4px 8px",
+            marginBottom: "4px",  // Add some margin for mobile view
             backgroundColor: "#eab308",
             border: "none",
             borderRadius: "4px",
@@ -682,7 +689,8 @@ main();`;
             lineHeight: "1.5",
             outline: "none",
             overflowY: "auto",
-            transition: "all 0.3s ease"
+            transition: "all 0.3s ease",
+            minHeight: "200px" // Add a minimum height for the textarea
           }}
           spellCheck="false"
         />
