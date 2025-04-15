@@ -7,6 +7,7 @@ export default function PomodoroEditor() {
   const [activeTab, setActiveTab] = useState(0);
   const [editingTabIndex, setEditingTabIndex] = useState(null);
   const [editingTabName, setEditingTabName] = useState("");
+  const [isDarkMode, setIsDarkMode] = useState(true);
   const [tabs, setTabs] = useState([
     {
       name: "Main.java",
@@ -14,16 +15,29 @@ export default function PomodoroEditor() {
 public class Main {
     public static void main(String[] args) {
         // Your code here
-        int[] array = {5, 3, 8, 4, 2};
+        System.out.println("Hello World");
         
-        // Example: Print the array
-        for(int i = 0; i < array.length; i++) {
-            System.out.print(array[i] + " ");
-        }
+        // Example array
+        int[] arr = {5, 3, 8, 4, 2};
+        System.out.println("Array: " + java.util.Arrays.toString(arr));
     }
 }`
     }
   ]);
+
+  // Theme colors based on current mode
+  const theme = {
+    bg: isDarkMode ? "#0d1b2a" : "#f8fafc",
+    headerBg: isDarkMode ? "#1e293b" : "#e2e8f0",
+    text: isDarkMode ? "#e0e1dd" : "#334155",
+    lineNumbers: isDarkMode ? "#64748b" : "#94a3b8",
+    border: isDarkMode ? "#334155" : "#cbd5e1",
+    titleGradient: isDarkMode 
+      ? "linear-gradient(90deg, #3a1c71, #6b46c1)" 
+      : "linear-gradient(90deg, #6366f1, #8b5cf6)",
+    activeTabBg: isDarkMode ? "#0d1b2a" : "#ffffff",
+    inactiveTabText: isDarkMode ? "#94a3b8" : "#64748b"
+  };
 
   // Timer logic
   useEffect(() => {
@@ -63,6 +77,11 @@ public class Main {
     return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
   };
 
+  // Toggle dark/light mode
+  const toggleTheme = () => {
+    setIsDarkMode(!isDarkMode);
+  };
+
   // Handle timer controls
   const startTimer = () => setIsActive(true);
   const pauseTimer = () => setIsActive(false);
@@ -85,54 +104,82 @@ public class Main {
     setTabs(newTabs);
   };
 
-  // Get boilerplate code based on file extension
+  // Get simplified boilerplate code based on file extension
   const getBoilerplateForExtension = (filename) => {
     const extension = filename.split('.').pop().toLowerCase();
-    const baseName = filename.split('.');
+    const baseName = filename.split('.')[0]; // Get only the first part before dot (fixed)
     
     switch(extension) {
       case 'java':
-        return `// Java Class Template
+        return `// Java DSA Practice Template
 public class ${baseName} {
     public static void main(String[] args) {
-        // Your Java code here
-        System.out.println("Hello from ${baseName}");
+        // Your code here
+        System.out.println("Hello World");
+        
+        // Example array
+        int[] arr = {5, 3, 8, 4, 2};
+        System.out.println("Array: " + java.util.Arrays.toString(arr));
     }
 }`;
       case 'py':
-        return `# Python Script Template
+        return `# Python DSA Practice Template
+
 def main():
-    # Your Python code here
-    print("Hello from ${baseName}")
+    # Your code here
+    print("Hello World")
+    
+    # Example array
+    arr =
+    print(f"Array: {arr}")
 
 if __name__ == "__main__":
     main()`;
       case 'c':
-        return `/* C Program Template */
-#include <stdio.h>
-#include <stdlib.h>
+        return `#include <stdio.h>
 
 int main() {
-    // Your C code here
-    printf("Hello from ${baseName}\\n");
+    // Your code here
+    printf("Hello World\\n");
+    
+    // Example array
+    int arr[] = {5, 3, 8, 4, 2};
+    int n = sizeof(arr) / sizeof(arr);
+    
+    printf("Array: ");
+    for (int i = 0; i < n; i++)
+        printf("%d ", arr[i]);
+    printf("\\n");
+    
     return 0;
 }`;
       case 'cpp':
-        return `/* C++ Program Template */
-#include <iostream>
+        return `#include <iostream>
 #include <vector>
 using namespace std;
 
 int main() {
-    // Your C++ code here
-    cout << "Hello from ${baseName}" << endl;
+    // Your code here
+    cout << "Hello World" << endl;
+    
+    // Example array
+    vector<int> arr = {5, 3, 8, 4, 2};
+    cout << "Array: ";
+    for (int num : arr) cout << num << " ";
+    cout << endl;
+    
     return 0;
 }`;
       case 'js':
-        return `// JavaScript Template
+        return `// JavaScript DSA Practice Template
+
 function main() {
-    // Your JavaScript code here
-    console.log("Hello from ${baseName}");
+    // Your code here
+    console.log("Hello World");
+    
+    // Example array
+    const arr =;
+    console.log("Array:", arr);
 }
 
 main();`;
@@ -142,18 +189,17 @@ main();`;
     }
   };
 
-  // Add new tab with specific language
-  const addNewTab = (extension = 'java') => {
-    const baseName = `File${tabs.length + 1}`;
-    const newTabName = `${baseName}.${extension}`;
+  // Add new tab with default name
+  const addGenericTab = () => {
+    const newTabName = `File${tabs.length + 1}.txt`;
     setTabs([...tabs, {
       name: newTabName,
-      content: getBoilerplateForExtension(newTabName)
+      content: `// New file: ${newTabName}\n// Add your code here`
     }]);
     setActiveTab(tabs.length);
   };
 
-  // Add new language-specific tab
+  // Add new tab with specific language
   const addLanguageTab = (lang) => {
     const extensions = {
       'java': 'java',
@@ -162,7 +208,18 @@ main();`;
       'cpp': 'cpp',
       'javascript': 'js'
     };
-    addNewTab(extensions[lang]);
+    
+    const extension = extensions[lang] || 'txt';
+    const baseName = `File${tabs.length + 1}`;
+    const newTabName = `${baseName}.${extension}`;
+    
+    const newTabs = [...tabs, {
+      name: newTabName,
+      content: getBoilerplateForExtension(newTabName)
+    }];
+    
+    setTabs(newTabs);
+    setActiveTab(newTabs.length - 1);
   };
 
   // Close tab
@@ -185,15 +242,16 @@ main();`;
     setEditingTabName(tabs[index].name);
   };
 
-  // Update class name in Java files
+  // FIXED: Update class name in Java files based on the file name
   const updateClassNameInContent = (oldName, newName, content) => {
     // Only process Java files
     if (!newName.endsWith('.java')) return content;
-    
-    const oldClassName = oldName.split('.');
-    const newClassName = newName.split('.');
-    
-    // Simple regex to replace the class name
+
+    // Extract just the filename without extension
+    const oldClassName = oldName.split('.')[0]; // FIXED: Get only the first part (filename without extension)
+    const newClassName = newName.split('.')[0]; // FIXED: Get only the first part (filename without extension)
+
+    // Replace all occurrences of the class name in the content
     return content.replace(
       new RegExp(`class\\s+${oldClassName}\\s*\\{`, 'g'),
       `class ${newClassName} {`
@@ -259,23 +317,26 @@ main();`;
       flexDirection: "column", 
       height: "100vh", 
       fontFamily: "Consolas, Monaco, 'Courier New', monospace",
-      backgroundColor: "#0d1b2a",
-      color: "#e0e1dd"
+      backgroundColor: theme.bg,
+      color: theme.text,
+      transition: "all 0.3s ease"
     }}>
       {/* Header */}
       <div style={{ 
         display: "flex",
-        backgroundColor: "#1e293b",
-        borderBottom: "1px solid #334155",
+        backgroundColor: theme.headerBg,
+        borderBottom: `1px solid ${theme.border}`,
         padding: "10px 15px",
-        alignItems: "center"
+        alignItems: "center",
+        transition: "all 0.3s ease"
       }}>
         {/* Title */}
         <div style={{
-          background: "linear-gradient(90deg, #3a1c71, #6b46c1)",
+          background: theme.titleGradient,
           padding: "8px 16px",
           borderRadius: "6px",
-          marginRight: "20px"
+          marginRight: "20px",
+          transition: "all 0.3s ease"
         }}>
           <h1 style={{ 
             margin: 0, 
@@ -291,13 +352,14 @@ main();`;
         <div style={{
           display: "flex",
           alignItems: "center",
-          background: "linear-gradient(90deg, #3a1c71, #6b46c1)",
+          background: theme.titleGradient,
           padding: "6px 16px",
           borderRadius: "6px",
           marginRight: "auto",
-          marginLeft: "auto"
+          marginLeft: "auto",
+          transition: "all 0.3s ease"
         }}>
-          <div style={{ fontSize: "20px", fontWeight: "bold", marginRight: "12px" }}>
+          <div style={{ fontSize: "20px", fontWeight: "bold", marginRight: "12px", color: "white" }}>
             {formatTime(timeLeft)}
           </div>
           <div style={{ display: "flex", gap: "8px" }}>
@@ -343,23 +405,43 @@ main();`;
             style={{ 
               width: "50px",
               padding: "5px",
-              backgroundColor: "#334155",
-              color: "white",
-              border: "1px solid #475569",
+              backgroundColor: isDarkMode ? "#334155" : "#e2e8f0",
+              color: theme.text,
+              border: `1px solid ${theme.border}`,
               borderRadius: "4px",
-              fontSize: "14px"
+              fontSize: "14px",
+              transition: "all 0.3s ease"
             }}
           />
           <span>mins</span>
+          
+          {/* Theme Toggle Button */}
+          <button
+            onClick={toggleTheme}
+            style={{
+              backgroundColor: "transparent",
+              color: theme.text,
+              border: "none",
+              fontSize: "18px",
+              cursor: "pointer",
+              padding: "4px 8px",
+              transition: "all 0.3s ease"
+            }}
+            title={isDarkMode ? "Switch to Light Mode" : "Switch to Dark Mode"}
+          >
+            {isDarkMode ? "☀️" : "🌙"}
+          </button>
+          
           <button
             onClick={saveCode}
             style={{
               backgroundColor: "transparent",
-              color: "#e0e1dd",
+              color: theme.text,
               border: "none",
               fontSize: "18px",
               cursor: "pointer",
-              padding: "4px 8px"
+              padding: "4px 8px",
+              transition: "all 0.3s ease"
             }}
             title="Copy code"
           >
@@ -371,11 +453,12 @@ main();`;
       {/* Tab Bar */}
       <div style={{
         display: "flex",
-        backgroundColor: "#1e293b",
-        borderBottom: "1px solid #334155",
+        backgroundColor: theme.headerBg,
+        borderBottom: `1px solid ${theme.border}`,
         padding: "0 10px",
         overflowX: "auto",
-        whiteSpace: "nowrap"
+        whiteSpace: "nowrap",
+        transition: "all 0.3s ease"
       }}>
         {tabs.map((tab, index) => (
           <div 
@@ -383,13 +466,14 @@ main();`;
             onClick={() => setActiveTab(index)}
             style={{
               padding: "8px 16px",
-              backgroundColor: activeTab === index ? "#0d1b2a" : "transparent",
+              backgroundColor: activeTab === index ? theme.activeTabBg : "transparent",
               borderBottom: activeTab === index ? "2px solid #3b82f6" : "none",
-              color: activeTab === index ? "#fff" : "#94a3b8",
+              color: activeTab === index ? theme.text : theme.inactiveTabText,
               cursor: "pointer",
               display: "flex",
               alignItems: "center",
-              gap: "8px"
+              gap: "8px",
+              transition: "all 0.3s ease"
             }}
           >
             {editingTabIndex === index ? (
@@ -405,12 +489,13 @@ main();`;
                   style={{
                     padding: "2px 4px",
                     fontSize: "14px",
-                    backgroundColor: "#334155",
-                    color: "#fff",
-                    border: "1px solid #4b5563",
+                    backgroundColor: isDarkMode ? "#334155" : "#e2e8f0",
+                    color: theme.text,
+                    border: `1px solid ${theme.border}`,
                     borderRadius: "3px",
                     width: "120px",
-                    outline: "none"
+                    outline: "none",
+                    transition: "all 0.3s ease"
                   }}
                 />
               </form>
@@ -422,7 +507,7 @@ main();`;
                   style={{
                     background: "none",
                     border: "none",
-                    color: "#94a3b8",
+                    color: theme.inactiveTabText,
                     fontSize: "12px",
                     cursor: "pointer",
                     padding: "0 4px"
@@ -437,7 +522,7 @@ main();`;
                     style={{
                       background: "none",
                       border: "none",
-                      color: "#94a3b8",
+                      color: theme.inactiveTabText,
                       fontSize: "12px",
                       cursor: "pointer",
                       padding: "0 4px"
@@ -452,123 +537,121 @@ main();`;
           </div>
         ))}
         
-        {/* Language Menu */}
-        <div style={{ position: "relative", display: "inline-block" }}>
-          <button
-            onClick={() => addNewTab()}
-            style={{
-              padding: "8px 12px",
-              backgroundColor: "transparent",
-              border: "none",
-              color: "#94a3b8",
-              cursor: "pointer",
-              fontSize: "16px"
-            }}
-            title="New Tab"
-          >
-            +
-          </button>
-          <div style={{
-            position: "absolute",
-            right: 0,
-            top: "100%",
-            backgroundColor: "#1e293b",
-            border: "1px solid #334155",
-            borderRadius: "4px",
-            zIndex: 10,
-            width: "120px",
-            boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)",
-            display: "none"
+        {/* Generic Tab Button */}
+        <button
+          onClick={addGenericTab}
+          style={{
+            padding: "8px 12px",
+            backgroundColor: "transparent",
+            border: "none",
+            color: theme.inactiveTabText,
+            cursor: "pointer",
+            fontSize: "16px",
+            transition: "all 0.3s ease"
           }}
-          onMouseEnter={(e) => e.currentTarget.style.display = "block"}
-          onMouseLeave={(e) => e.currentTarget.style.display = "none"}
-          >
-            <button
-              onClick={() => addLanguageTab('java')}
-              style={{
-                display: "block",
-                width: "100%",
-                textAlign: "left",
-                padding: "8px 12px",
-                backgroundColor: "transparent",
-                border: "none",
-                color: "#e0e1dd",
-                cursor: "pointer"
-              }}
-            >
-              Java
-            </button>
-            <button
-              onClick={() => addLanguageTab('python')}
-              style={{
-                display: "block",
-                width: "100%",
-                textAlign: "left",
-                padding: "8px 12px",
-                backgroundColor: "transparent",
-                border: "none",
-                color: "#e0e1dd",
-                cursor: "pointer"
-              }}
-            >
-              Python
-            </button>
-            <button
-              onClick={() => addLanguageTab('c')}
-              style={{
-                display: "block",
-                width: "100%",
-                textAlign: "left",
-                padding: "8px 12px",
-                backgroundColor: "transparent",
-                border: "none",
-                color: "#e0e1dd",
-                cursor: "pointer"
-              }}
-            >
-              C
-            </button>
-            <button
-              onClick={() => addLanguageTab('cpp')}
-              style={{
-                display: "block",
-                width: "100%",
-                textAlign: "left",
-                padding: "8px 12px",
-                backgroundColor: "transparent",
-                border: "none",
-                color: "#e0e1dd",
-                cursor: "pointer"
-              }}
-            >
-              C++
-            </button>
-            <button
-              onClick={() => addLanguageTab('javascript')}
-              style={{
-                display: "block",
-                width: "100%",
-                textAlign: "left",
-                padding: "8px 12px",
-                backgroundColor: "transparent",
-                border: "none",
-                color: "#e0e1dd",
-                cursor: "pointer"
-              }}
-            >
-              JavaScript
-            </button>
-          </div>
-        </div>
+          title="New Tab"
+        >
+          +
+        </button>
+      </div>
+
+      {/* Language Buttons Bar */}
+      <div style={{
+        display: "flex",
+        backgroundColor: theme.headerBg,
+        borderBottom: `1px solid ${theme.border}`,
+        padding: "8px 10px",
+        overflowX: "auto",
+        transition: "all 0.3s ease"
+      }}>
+        <button
+          onClick={() => addLanguageTab('java')}
+          style={{
+            padding: "4px 8px",
+            marginRight: "8px",
+            backgroundColor: "#3b82f6",
+            border: "none",
+            borderRadius: "4px",
+            color: "white",
+            fontSize: "12px",
+            cursor: "pointer"
+          }}
+          title="Add Java File"
+        >
+          Java
+        </button>
+        <button
+          onClick={() => addLanguageTab('python')}
+          style={{
+            padding: "4px 8px",
+            marginRight: "8px",
+            backgroundColor: "#10b981",
+            border: "none",
+            borderRadius: "4px",
+            color: "white",
+            fontSize: "12px",
+            cursor: "pointer"
+          }}
+          title="Add Python File"
+        >
+          Python
+        </button>
+        <button
+          onClick={() => addLanguageTab('cpp')}
+          style={{
+            padding: "4px 8px",
+            marginRight: "8px",
+            backgroundColor: "#f59e0b",
+            border: "none",
+            borderRadius: "4px",
+            color: "white",
+            fontSize: "12px",
+            cursor: "pointer"
+          }}
+          title="Add C++ File"
+        >
+          C++
+        </button>
+        <button
+          onClick={() => addLanguageTab('c')}
+          style={{
+            padding: "4px 8px",
+            marginRight: "8px",
+            backgroundColor: "#64748b",
+            border: "none",
+            borderRadius: "4px",
+            color: "white",
+            fontSize: "12px",
+            cursor: "pointer"
+          }}
+          title="Add C File"
+        >
+          C
+        </button>
+        <button
+          onClick={() => addLanguageTab('javascript')}
+          style={{
+            padding: "4px 8px",
+            backgroundColor: "#eab308",
+            border: "none",
+            borderRadius: "4px",
+            color: "white",
+            fontSize: "12px",
+            cursor: "pointer"
+          }}
+          title="Add JavaScript File"
+        >
+          JavaScript
+        </button>
       </div>
 
       {/* Editor */}
-      <div style={{ display: "flex", flex: 1, position: "relative" }}>
+      <div style={{ display: "flex", flex: 1, position: "relative", transition: "all 0.3s ease" }}>
         {/* Line numbers */}
         <div style={{
           padding: "15px 8px 15px 15px",
-          backgroundColor: "#1e293b",
-          color: "#64748b",
+          backgroundColor: isDarkMode ? "#1e293b" : "#e2e8f0",
+          color: theme.lineNumbers,
           fontFamily: "monospace",
           fontSize: "14px",
           textAlign: "right",
@@ -576,12 +659,13 @@ main();`;
           width: "50px",
           overflow: "hidden",
           whiteSpace: "pre-line",
-          lineHeight: "1.5"
+          lineHeight: "1.5",
+          transition: "all 0.3s ease"
         }}>
           {getLineNumbers()}
         </div>
 
-        {/* Code Editor - Clean without HTML-based syntax highlighting */}
+        {/* Code Editor */}
         <textarea
           value={tabs[activeTab].content}
           onChange={updateTabContent}
@@ -589,15 +673,16 @@ main();`;
           style={{
             flex: 1,
             padding: "15px",
-            backgroundColor: "#0d1b2a",
-            color: "#e0e1dd",
+            backgroundColor: theme.bg,
+            color: theme.text,
             border: "none",
             resize: "none",
             fontFamily: "monospace",
             fontSize: "14px",
             lineHeight: "1.5",
             outline: "none",
-            overflowY: "auto"
+            overflowY: "auto",
+            transition: "all 0.3s ease"
           }}
           spellCheck="false"
         />
